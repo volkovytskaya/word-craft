@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Craft</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/js/game-logic.js" type="module"></script>
+    <script src="/js/words-array.js" type="module"></script>
+    <script src="/js/modals.js" type="module"></script>
+</head>
+<body>
+    <header>
+        <h1>Word Craft</h1>
+        <p>Get 6 chances to guess a 5-letter word</p>
+        <button class="modal-open-button">How to play</button>
+        <a class="play-button" href="game.html">Play</a>
+    </header>
+    <main>
+        <section class="modal hidden">
+            <div class="modal-close-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" viewBox="-0.5 0 25 25" fill="none">
+                    <path d="M3 21.32L21 3.32001" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 3.32001L21 21.32" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="how-to-play">
+                <h2>How To Play</h2>
+                <p>Guess the word in 6 tries.</p>
+                <p>Each guess must be a valid 5-letter word.</p>
+                <p>The color of the tiles will change to show how close your guess was to the word.</p>
+                <p>Examples</p>
+                <div class="row">
+                    <div class="box-example" style="background-color: #9adfbc;">W</div>
+                    <div class="box-example">E</div>
+                    <div class="box-example">A</div>
+                    <div class="box-example">R</div>
+                    <div class="box-example">Y</div>
+                </div>
+                <p>W is in the word and in the correct spot.</p>
+                <div class="row">
+                    <div class="box-example">P</div>
+                    <div class="box-example" style="background-color: #ffc86a;">I</div>
+                    <div class="box-example">L</div>
+                    <div class="box-example">L</div>
+                    <div class="box-example">S</div>
+                </div>
+                <p>I is in the word but in the wrong spot.</p>
+                <div class="row">
+                    <div class="box-example">V</div>
+                    <div class="box-example">A</div>
+                    <div class="box-example">G</div>
+                    <div class="box-example" style="background-color: #cecece;">U</div>
+                    <div class="box-example">E</div>
+                </div>
+                <p>U is not in the word in any spot.</p> 
+            </div>               
+        </section>
+        <div class="overlay hidden"></div>
+    </main>
+</body>
+</html>
