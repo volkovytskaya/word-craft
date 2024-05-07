@@ -12,219 +12,230 @@ import {
     showNotInWordsListMessage
 } from '/js/messages.js';
 
-const maxWordLength = 5;
-const keys = document.querySelectorAll('.key');
-const allBoxes = document.querySelectorAll('.box');
-let emptyBoxes = document.querySelectorAll('.box');
-let wordIsNotGuessed = true;
-let currentBoardState = [];
-let counterOfEnteredLetters = 0;
-let wordToGuess;
-let wordsSorted = words.sort();
-
-const selectWordForGuessing = (words) => {
-    let index = Math.floor(Math.random() * (words.length - 1));
-    wordToGuess = words[index].toUpperCase();
-    localStorage.setItem('wordForGuessingIsSelected', true);
-    localStorage.setItem('id', index);
-    return wordToGuess;
-}
-
-if (localStorage.getItem('wordForGuessingIsSelected') === null) {
-    wordToGuess = selectWordForGuessing(words);
-} else {
-    wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
-}
-
-const fillBoxesWithLetters = (keyName) => {
-    const regExp = /^[A-za-z]$/;
-    for (let i = 0; i < maxWordLength; i++) {
-        if (emptyBoxes[i].innerHTML === '' && 
-            regExp.test(keyName) && 
-            wordIsNotGuessed) {
-                emptyBoxes[i].innerHTML = keyName.toUpperCase();
-                counterOfEnteredLetters++;
-                break;
-        }
+class Board {
+    constructor(currentBoardState) {
+        this.maxWordLength = 5;
+        this.allBoxes = document.querySelectorAll('.box');
+        this.emptyBoxes = document.querySelectorAll('.box');
+        this.currentBoardState = currentBoardState;
+        this.counterOfEnteredLetters = 0;
     }
-};
-
-const removeLetter = () => {
-    for (let i = maxWordLength; i >= 0; i--) {
-        if (emptyBoxes[i].innerHTML !== '' && 
-            wordIsNotGuessed) {
-            emptyBoxes[i].innerHTML = '';
-            counterOfEnteredLetters--;
-            break;
-        }
-    }
-};
-
-const checkIfGuessed = (wordToGuess, enteredWord) => {
-    if (wordToGuess === enteredWord) {
-        addColorToLetters(wordToGuess, enteredWord);
-        wordIsNotGuessed = false;
-        localStorage.setItem('wordIsNotGuessed', wordIsNotGuessed);
-        currentBoardState.push(enteredWord);
-        localStorage.setItem('wordForGuessingIsSelected', false);
-        openPlayAgainModal();
-        showReplayIcon();
-    } else {
-        addColorToLetters(wordToGuess, enteredWord);
-        wordIsNotGuessed = true;
-        localStorage.setItem('wordIsNotGuessed', wordIsNotGuessed);
-        currentBoardState.push(enteredWord);
-        emptyBoxes = [].slice.call(emptyBoxes, 5);
-    }
-    updateBoardStateInLocalStorage(currentBoardState);
-    counterOfEnteredLetters = 0;
-};
-
-const checkIfWordInWordsList = (enteredWord) => {
-    let low = 0;
-    let high = words.length - 1;
-    let mid = Math.floor((low + high) / 2);
-    let inWordsList = false;
-    let midWordFromWordsList = wordsSorted[mid].toUpperCase();
-    while (low <= high) {
-        if (enteredWord === midWordFromWordsList) {
-            inWordsList = true;
-            break;
-        } else if (enteredWord < midWordFromWordsList) {
-            high = mid - 1;
-            mid = Math.floor((low + high) / 2);
-            midWordFromWordsList = words[mid].toUpperCase();
-        } else {
-            low = mid + 1;
-            mid = Math.floor((low + high) / 2);
-            midWordFromWordsList = words[mid].toUpperCase();
-        }
-    }
-    return inWordsList;
-}
-
-const startNewGame = () => {
-    currentBoardState = [];
-    updateBoardStateInLocalStorage(currentBoardState);
-    updateBoardStateOnUI();
-    wordToGuess = selectWordForGuessing(words);
-    closePlayAgainModal();
-    hideReplayIcon();
-    clearBoard();
-    removeColorFromLetters();
-    wordIsNotGuessed = true;
-    localStorage.setItem('wordIsNotGuessed', true);
-};
-
-if (playAgainButton) {
-    playAgainButton.addEventListener('click', startNewGame);
-}
-
-const addColorToLetters = (wordToGuess, enteredWord) => {
-    for (let i = 0; i < maxWordLength; i++) {
-        for (let j = 0; j < maxWordLength; j++) {
-            if (enteredWord[i] === wordToGuess[j]) {
-                emptyBoxes[i].classList.add('orange');
-                emptyBoxes[i].classList.add('colored');
+    fillBoxesWithLetters(keyName) {
+        const regExp = /^[A-za-z]$/;
+        for (let i = 0; i < this.maxWordLength; i++) {
+            if (this.emptyBoxes[i].innerHTML === '' && 
+                regExp.test(keyName) && 
+                game.wordIsNotGuessed) {
+                    this.emptyBoxes[i].innerHTML = keyName.toUpperCase();
+                    this.counterOfEnteredLetters++;
+                    break;
             }
         }
     }
-    for (let i = 0; i < maxWordLength; i++) {
-        if (enteredWord[i] === wordToGuess[i]) {
-            emptyBoxes[i].classList.add('green');
-            emptyBoxes[i].classList.add('colored');
+    removeLetter() {
+        for (let i = this.maxWordLength; i >= 0; i--) {
+            if (this.emptyBoxes[i].innerHTML !== '' && 
+                game.wordIsNotGuessed) {
+                this.emptyBoxes[i].innerHTML = '';
+                this.counterOfEnteredLetters--;
+                break;
+            }
         }
     }
-    for (let i = 0; i < maxWordLength; i++) {
-        if (!emptyBoxes[i].classList.contains('colored')) {
-            emptyBoxes[i].classList.add('grey');
+    updateBoardStateInLocalStorage(currentBoardState) {
+        if (this.currentBoardState.length === 0) {
+            localStorage.removeItem('boardState');
+        } else {
+            localStorage.setItem('boardState', this.currentBoardState);
+            let enteredWords = localStorage.getItem('boardState').split(',');
+            if (enteredWords[0] === '') enteredWords = [];
         }
     }
-};
-
-const removeColorFromLetters  = () => {
-    for (let i = 0; i < allBoxes.length; i++) {
-        allBoxes[i].classList.remove('colored');
-        allBoxes[i].classList.remove('orange');
-        allBoxes[i].classList.remove('green');
-        allBoxes[i].classList.remove('grey');
+    updateBoardStateOnUI() {
+        let enteredWords = [];
+        if (localStorage.getItem('boardState') !== null) {
+            enteredWords = localStorage.getItem('boardState').split(',');
+        }
+        for (let i = 0; i < enteredWords.length; i++) {
+            for (let j = 0; j < enteredWords[i].length; j++) {
+                this.fillBoxesWithLetters(enteredWords[i][j]);
+            }
+            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
+        }
+    }
+    addColorToLetters(wordToGuess, enteredWord) {
+        for (let i = 0; i < this.maxWordLength; i++) {
+            for (let j = 0; j < this.maxWordLength; j++) {
+                if (enteredWord[i] === wordToGuess[j]) {
+                    this.emptyBoxes[i].classList.add('orange');
+                    this.emptyBoxes[i].classList.add('colored');
+                }
+            }
+        }
+        for (let i = 0; i < this.maxWordLength; i++) {
+            if (enteredWord[i] === wordToGuess[i]) {
+                this.emptyBoxes[i].classList.add('green');
+                this.emptyBoxes[i].classList.add('colored');
+            }
+        }
+        for (let i = 0; i < this.maxWordLength; i++) {
+            if (!this.emptyBoxes[i].classList.contains('colored')) {
+                this.emptyBoxes[i].classList.add('grey');
+            }
+        }
+    }
+    removeColorFromLetters() {
+        for (let i = 0; i < this.allBoxes.length; i++) {
+            this.allBoxes[i].classList.remove('colored');
+            this.allBoxes[i].classList.remove('orange');
+            this.allBoxes[i].classList.remove('green');
+            this.allBoxes[i].classList.remove('grey');
+        }
+    }
+    returnEnteredWord() {
+        let enteredWord = '';
+        for (let i = 0; i < this.maxWordLength; i++) {
+            enteredWord += this.emptyBoxes[i].innerHTML;
+            enteredWord = enteredWord.slice(0, 5);
+        }
+        return enteredWord;
+    }
+    clearBoard() {
+        for (let i = 0; i < this.allBoxes.length; i++) {
+            this.allBoxes[i].innerHTML = '';
+        }
+        this.counterOfEnteredLetters = 0;
+        this.emptyBoxes = document.querySelectorAll('.box');
     }
 }
 
-const returnEnteredWord = () => {
-    let enteredWord = '';
-    for (let i = 0; i < maxWordLength; i++) {
-        enteredWord += emptyBoxes[i].innerHTML;
-        enteredWord = enteredWord.slice(0, 5);
+class Game {
+    constructor(wordToGuess) {
+        this.wordIsNotGuessed = true;
+        this.wordToGuess = wordToGuess;
+        this.wordsSorted = words.sort();
     }
-    return enteredWord;
-};
-
-const updateBoardStateInLocalStorage = (currentBoardState) => {
-    if (currentBoardState.length === 0) {
-        localStorage.removeItem('boardState');
-    } else {
-        localStorage.setItem('boardState', currentBoardState);
-        let enteredWords = localStorage.getItem('boardState').split(',');
-        if (enteredWords[0] === '') enteredWords = [];
+    selectWordForGuessing() {
+        let indexOfWordToGuess = Math.floor(Math.random() * (words.length - 1));
+        this.wordToGuess = words[indexOfWordToGuess].toUpperCase();
+        localStorage.setItem('wordForGuessingIsSelected', true);
+        localStorage.setItem('id', indexOfWordToGuess);
+        return this.wordToGuess;
     }
-};
-
-const updateBoardStateOnUI = () => {
-    let enteredWords = [];
-    if (localStorage.getItem('boardState') !== null) {
-        enteredWords = localStorage.getItem('boardState').split(',');
-    }
-    for (let i = 0; i < enteredWords.length; i++) {
-        for (let j = 0; j < enteredWords[i].length; j++) {
-            fillBoxesWithLetters(enteredWords[i][j]);
+    checkIfGuessed(wordToGuess, enteredWord) {
+        if (this.wordToGuess === enteredWord) {
+            board.addColorToLetters(this.wordToGuess, enteredWord);
+            this.wordIsNotGuessed = false;
+            localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
+            localStorage.setItem('wordForGuessingIsSelected', false);
+            openPlayAgainModal();
+            showReplayIcon();
+        } else {
+            board.addColorToLetters(this.wordToGuess, enteredWord);
+            this.wordIsNotGuessed = true;
+            localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
+            board.emptyBoxes = [].slice.call(board.emptyBoxes, 5);
         }
-        checkIfGuessed(wordToGuess, returnEnteredWord());
+        board.counterOfEnteredLetters = 0;
     }
-};
+    checkIfWordInWordsList(enteredWord) {
+        let low = 0;
+        let high = words.length - 1;
+        let mid = Math.floor((low + high) / 2);
+        let inWordsList = false;
+        let midWordFromWordsList = this.wordsSorted[mid].toUpperCase();
+        while (low <= high) {
+            if (enteredWord === midWordFromWordsList) {
+                inWordsList = true;
+                break;
+            } else if (enteredWord < midWordFromWordsList) {
+                high = mid - 1;
+                mid = Math.floor((low + high) / 2);
+                midWordFromWordsList = this.wordsSorted[mid].toUpperCase();
+            } else {
+                low = mid + 1;
+                mid = Math.floor((low + high) / 2);
+                midWordFromWordsList = this.wordsSorted[mid].toUpperCase();
+            }
+        }
+        return inWordsList;
+    }
+    startNewGame() {
+        board.currentBoardState = [];
+        board.updateBoardStateInLocalStorage(board.currentBoardState);
+        board.updateBoardStateOnUI();
+        this.wordToGuess = game.selectWordForGuessing();
+        closePlayAgainModal();
+        hideReplayIcon();
+        board.clearBoard();
+        board.removeColorFromLetters();
+        this.wordIsNotGuessed = true;
+        localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
+    }
+}
 
-const clearBoard = () => {
-    for (let i = 0; i < allBoxes.length; i++) {
-        allBoxes[i].innerHTML = '';
-    }
-    counterOfEnteredLetters = 0;
-    emptyBoxes = document.querySelectorAll('.box');
-};
+const keys = document.querySelectorAll('.key');
 
 let numOfEnteredWords;
 if (localStorage.getItem('boardState') === null) {
     numOfEnteredWords = 0;
 } else {
     numOfEnteredWords = localStorage.getItem('boardState').split(',').length;
-    updateBoardStateOnUI();
 }
+
+let currentBoardState = [];
+if (localStorage.getItem('boardState') !== null) {
+    currentBoardState = localStorage.getItem('boardState').split(',');
+} else {
+    currentBoardState = [];
+}
+
+let wordToGuess = '';
+if (localStorage.getItem('wordForGuessingIsSelected') === null) {
+    wordToGuess = game.selectWordForGuessing();
+} else {
+    wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
+}
+
+let board = new Board(currentBoardState);
+let game = new Game(wordToGuess);
+
+board.updateBoardStateOnUI();
 if (localStorage.getItem('wordForGuessingIsSelected') === 'false' && 
     numOfEnteredWords > 0) {
-    updateBoardStateOnUI();
+        board.updateBoardStateOnUI();
+}
+
+if (playAgainButton) {
+    playAgainButton.addEventListener('click', () => {
+        game.startNewGame();
+    });
 }
 
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;  
     if (!event.metaKey) { // checks if command is pressed (command + R for page reloading)
-        fillBoxesWithLetters(keyName);
+        board.fillBoxesWithLetters(keyName);
     }
 });
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && 
-        counterOfEnteredLetters === 5 && 
-        checkIfWordInWordsList(returnEnteredWord())) {
-            checkIfGuessed(wordToGuess, returnEnteredWord());
+        board.counterOfEnteredLetters === 5 && 
+        game.checkIfWordInWordsList(board.returnEnteredWord())) {
+            board.currentBoardState.push(board.returnEnteredWord());
+            board.updateBoardStateInLocalStorage(board.currentBoardState);
+            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
     } else if (event.key === 'Enter' && 
-        counterOfEnteredLetters === 5 && 
-        !checkIfWordInWordsList(returnEnteredWord())) {
+        board.counterOfEnteredLetters === 5 && 
+        !game.checkIfWordInWordsList(board.returnEnteredWord())) {
             showNotInWordsListMessage();
             hideMessage();
-    } else if (event.key === 'Enter' && counterOfEnteredLetters < 5) {
+    } else if (event.key === 'Enter' && board.counterOfEnteredLetters < 5) {
         showNotEnoughLettersMessage();
         hideMessage();
     } else if (event.key === 'Delete' || event.key === 'Backspace') {
-        removeLetter();
+        board.removeLetter();
     }
 });
 
@@ -232,26 +243,24 @@ keys.forEach((key) => {
     key.addEventListener('click', () => {
         if (key.innerHTML !== 'Enter' && 
             key.innerHTML !== 'Delete') {
-                fillBoxesWithLetters(key.innerHTML);
+                board.fillBoxesWithLetters(key.innerHTML);
                 key.blur(); // removes keyboard focus onclick
         } else if (key.innerHTML === 'Enter' && 
-        counterOfEnteredLetters === 5 && 
-        checkIfWordInWordsList(returnEnteredWord())) {
-            checkIfGuessed(wordToGuess, returnEnteredWord());
+        board.counterOfEnteredLetters === 5 && 
+        game.checkIfWordInWordsList(board.returnEnteredWord())) {
+            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
             key.blur();
         } else if (key.innerHTML === 'Enter' && 
-        counterOfEnteredLetters === 5 && 
-        !checkIfWordInWordsList(returnEnteredWord())) {
+        board.counterOfEnteredLetters === 5 && 
+        !game.checkIfWordInWordsList(board.returnEnteredWord())) {
             showNotInWordsListMessage();
             hideMessage();
-        } else if (key.innerHTML === 'Enter' && counterOfEnteredLetters < 5) {
+        } else if (key.innerHTML === 'Enter' && board.counterOfEnteredLetters < 5) {
             showNotEnoughLettersMessage();
             hideMessage();
         } else if (key.innerHTML === 'Delete') {
-            removeLetter();
+            board.removeLetter();
             key.blur();
         }
     });
 });
-
-console.log(wordToGuess);
