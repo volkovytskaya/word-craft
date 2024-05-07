@@ -13,12 +13,13 @@ import {
 } from '/js/messages.js';
 
 class Board {
+    maxWordLength = 5;
+    allBoxes = document.querySelectorAll('.box');
+    emptyBoxes = document.querySelectorAll('.box');
+    counterOfEnteredLetters = 0;
+
     constructor(currentBoardState) {
-        this.maxWordLength = 5;
-        this.allBoxes = document.querySelectorAll('.box');
-        this.emptyBoxes = document.querySelectorAll('.box');
         this.currentBoardState = currentBoardState;
-        this.counterOfEnteredLetters = 0;
     }
     fillBoxesWithLetters(keyName) {
         const regExp = /^[A-za-z]$/;
@@ -110,10 +111,9 @@ class Board {
 }
 
 class Game {
-    constructor() {
-        this.wordIsNotGuessed = true;
-        this.wordsSorted = words.sort();
-    }
+    wordIsNotGuessed = true;
+    wordsSorted = words.sort();
+
     selectWordForGuessing() {
         let indexOfWordToGuess = Math.floor(Math.random() * (words.length - 1));
         wordToGuess = words[indexOfWordToGuess].toUpperCase();
