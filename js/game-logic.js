@@ -219,50 +219,70 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && 
-        board.counterOfEnteredLetters === 5 && 
-        game.checkIfWordInWordsList(board.returnEnteredWord())) {
-            board.currentBoardState.push(board.returnEnteredWord());
-            board.updateBoardStateInLocalStorage(board.currentBoardState);
-            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
-    } else if (event.key === 'Enter' && 
-        board.counterOfEnteredLetters === 5 && 
-        !game.checkIfWordInWordsList(board.returnEnteredWord())) {
-            showNotInWordsListMessage();
-            hideMessage();
-    } else if (event.key === 'Enter' && board.counterOfEnteredLetters < 5) {
+document.addEventListener('keydown', handleKeyDown);
+
+function handleKeyDown(event) {
+    if (isEnterPressed(event) && isWordComplete()) {
+        handleEnterPressedWhenWordComplete();
+    } else if (isEnterPressed(event) && !isWordComplete()) {
         showNotEnoughLettersMessage();
         hideMessage();
-    } else if (event.key === 'Delete' || event.key === 'Backspace') {
+    } else if (isDeletePressed(event) || isBackspace(event)) {
         board.removeLetter();
     }
-});
+}
+
+function isEnterPressed(event) {
+    return event.key === 'Enter';
+}
+
+function isDeletePressed(event) {
+    return event.key === 'Delete';
+}
+
+function isBackspace(event) {
+    return event.key === 'Backspace';
+}
+
+function isWordComplete() {
+    return board.counterOfEnteredLetters === 5;
+}
+
+function handleEnterPressedWhenWordComplete(key) {
+    if (game.checkIfWordInWordsList(board.returnEnteredWord())) {
+        board.currentBoardState.push(board.returnEnteredWord());
+        board.updateBoardStateInLocalStorage(board.currentBoardState);
+        game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
+    } else {
+        showNotInWordsListMessage();
+        hideMessage();
+    }
+    if (key) {
+        key.blur(); // removes keyboard focus onclick
+    }
+}
 
 keys.forEach((key) => {
-    key.addEventListener('click', () => {
-        if (key.innerHTML !== 'Enter' && 
-            key.innerHTML !== 'Delete') {
-                board.fillBoxesWithLetters(key.innerHTML);
-                key.blur(); // removes keyboard focus onclick
-        } else if (key.innerHTML === 'Enter' && 
-        board.counterOfEnteredLetters === 5 && 
-        game.checkIfWordInWordsList(board.returnEnteredWord())) {
-            board.currentBoardState.push(board.returnEnteredWord());
-            board.updateBoardStateInLocalStorage(board.currentBoardState);
-            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
-            key.blur();
-        } else if (key.innerHTML === 'Enter' && 
-        board.counterOfEnteredLetters === 5 && 
-        !game.checkIfWordInWordsList(board.returnEnteredWord())) {
-            showNotInWordsListMessage();
-            hideMessage();
-        } else if (key.innerHTML === 'Enter' && board.counterOfEnteredLetters < 5) {
-            showNotEnoughLettersMessage();
-            hideMessage();
-        } else if (key.innerHTML === 'Delete') {
-            board.removeLetter();
-            key.blur();
-        }
-    });
+    key.addEventListener('click', handleKeyClick);
 });
+
+function handleKeyClick(event) {
+    const key = event.target;
+    const keyContent = event.target.innerHTML;
+    if (keyContent !== 'Enter' && keyContent !== 'Delete') {
+        handleLetterKey(key, keyContent);
+    } else if (keyContent === 'Enter' && isWordComplete()) {
+        handleEnterPressedWhenWordComplete(key);
+    } else if (keyContent === 'Enter' && !isWordComplete()) {
+        showNotEnoughLettersMessage();
+        hideMessage();
+    } else if (keyContent === 'Delete') {
+        board.removeLetter();
+        key.blur();
+    }
+}
+
+function handleLetterKey(key, keyContent) {
+    board.fillBoxesWithLetters(keyContent);
+    key.blur();
+}
