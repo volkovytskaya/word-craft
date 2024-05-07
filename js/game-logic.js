@@ -60,7 +60,7 @@ class Board {
             for (let j = 0; j < enteredWords[i].length; j++) {
                 this.fillBoxesWithLetters(enteredWords[i][j]);
             }
-            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
+            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
         }
     }
     addColorToLetters(wordToGuess, enteredWord) {
@@ -110,28 +110,27 @@ class Board {
 }
 
 class Game {
-    constructor(wordToGuess) {
+    constructor() {
         this.wordIsNotGuessed = true;
-        this.wordToGuess = wordToGuess;
         this.wordsSorted = words.sort();
     }
     selectWordForGuessing() {
         let indexOfWordToGuess = Math.floor(Math.random() * (words.length - 1));
-        this.wordToGuess = words[indexOfWordToGuess].toUpperCase();
+        wordToGuess = words[indexOfWordToGuess].toUpperCase();
         localStorage.setItem('wordForGuessingIsSelected', true);
         localStorage.setItem('id', indexOfWordToGuess);
-        return this.wordToGuess;
+        return wordToGuess;
     }
     checkIfGuessed(wordToGuess, enteredWord) {
-        if (this.wordToGuess === enteredWord) {
-            board.addColorToLetters(this.wordToGuess, enteredWord);
+        if (wordToGuess === enteredWord) {
+            board.addColorToLetters(wordToGuess, enteredWord);
             this.wordIsNotGuessed = false;
             localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
             localStorage.setItem('wordForGuessingIsSelected', false);
             openPlayAgainModal();
             showReplayIcon();
         } else {
-            board.addColorToLetters(this.wordToGuess, enteredWord);
+            board.addColorToLetters(wordToGuess, enteredWord);
             this.wordIsNotGuessed = true;
             localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
             board.emptyBoxes = [].slice.call(board.emptyBoxes, 5);
@@ -164,7 +163,7 @@ class Game {
         board.currentBoardState = [];
         board.updateBoardStateInLocalStorage(board.currentBoardState);
         board.updateBoardStateOnUI();
-        this.wordToGuess = game.selectWordForGuessing();
+        wordToGuess = this.selectWordForGuessing();
         closePlayAgainModal();
         hideReplayIcon();
         board.clearBoard();
@@ -190,6 +189,9 @@ if (localStorage.getItem('boardState') !== null) {
     currentBoardState = [];
 }
 
+let board = new Board(currentBoardState);
+let game = new Game();
+
 let wordToGuess = '';
 if (localStorage.getItem('wordForGuessingIsSelected') === null) {
     wordToGuess = game.selectWordForGuessing();
@@ -197,10 +199,8 @@ if (localStorage.getItem('wordForGuessingIsSelected') === null) {
     wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
 }
 
-let board = new Board(currentBoardState);
-let game = new Game(wordToGuess);
-
 board.updateBoardStateOnUI();
+
 if (localStorage.getItem('wordForGuessingIsSelected') === 'false' && 
     numOfEnteredWords > 0) {
         board.updateBoardStateOnUI();
@@ -225,7 +225,7 @@ document.addEventListener('keydown', (event) => {
         game.checkIfWordInWordsList(board.returnEnteredWord())) {
             board.currentBoardState.push(board.returnEnteredWord());
             board.updateBoardStateInLocalStorage(board.currentBoardState);
-            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
+            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
     } else if (event.key === 'Enter' && 
         board.counterOfEnteredLetters === 5 && 
         !game.checkIfWordInWordsList(board.returnEnteredWord())) {
@@ -250,7 +250,7 @@ keys.forEach((key) => {
         game.checkIfWordInWordsList(board.returnEnteredWord())) {
             board.currentBoardState.push(board.returnEnteredWord());
             board.updateBoardStateInLocalStorage(board.currentBoardState);
-            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
+            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
             key.blur();
         } else if (key.innerHTML === 'Enter' && 
         board.counterOfEnteredLetters === 5 && 
@@ -266,5 +266,3 @@ keys.forEach((key) => {
         }
     });
 });
-
-console.log(game.wordToGuess);
