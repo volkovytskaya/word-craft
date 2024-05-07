@@ -248,6 +248,8 @@ keys.forEach((key) => {
         } else if (key.innerHTML === 'Enter' && 
         board.counterOfEnteredLetters === 5 && 
         game.checkIfWordInWordsList(board.returnEnteredWord())) {
+            board.currentBoardState.push(board.returnEnteredWord());
+            board.updateBoardStateInLocalStorage(board.currentBoardState);
             game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
             key.blur();
         } else if (key.innerHTML === 'Enter' && 
@@ -264,3 +266,5 @@ keys.forEach((key) => {
         }
     });
 });
+
+console.log(game.wordToGuess);
