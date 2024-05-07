@@ -42,7 +42,7 @@ class Board {
             }
         }
     }
-    updateBoardStateInLocalStorage(currentBoardState) {
+    updateBoardStateInLocalStorage() {
         if (this.currentBoardState.length === 0) {
             localStorage.removeItem('boardState');
         } else {
