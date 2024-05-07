@@ -1,0 +1,16 @@
+{
+  "name": "word-craft",
+  "version": "1.0.0",
+  "description": "Word Craft - infinite version of game Wordle",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "eslint": "^9.2.0",
+    "globals": "^15.1.0"
+  }
+}
