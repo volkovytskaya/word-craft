@@ -1,64 +1,95 @@
-const howToPlayModal = document.querySelector('.modal');
+const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const modalOpenBtn = document.querySelector('.modal-open-button');
 const modalCloseBtn = document.querySelector('.modal-close-button');
 const questionMark = document.querySelector('.question-mark');
 const playAgainContent = document.querySelector('.play-again');
 const howToPlayContent = document.querySelector('.how-to-play');
+const gameOverContent = document.querySelector('.game-over');
 const replayIcon = document.querySelector('.replay-icon');
 const playAgainButton = document.querySelector('.play-again-button');
 
-const openHowToPlayModal = () => {
-    if (playAgainContent) playAgainContent.classList.add('hidden');
-    howToPlayContent.classList.remove('hidden');
-    howToPlayModal.classList.remove('hidden');
-    overlay.classList.remove('hidden');
-};
+const openModal = (typeOfModal) => {
+    switch(typeOfModal) {
+        case 'how-to-play':
+            openHowToPlayModal();
+            break;
+        case 'play-again':
+            openPlayAgainModal();
+            break;
+        case 'game-over':
+            openGameOverModal();
+            break;
+    }
+}
 
-const closeHowToPlayModal = () => {
-    howToPlayModal.classList.add('hidden');
-    overlay.classList.add('hidden');
+const openHowToPlayModal = () => {
+    howToPlayContent.classList.remove('hidden');
+    playAgainContent.classList.add('hidden');
+    gameOverContent.classList.add('hidden');
+    playAgainButton.classList.add('hidden');
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
 };
 
 const openPlayAgainModal = () => {
-    howToPlayContent.classList.add('hidden');
     playAgainContent.classList.remove('hidden');
-    howToPlayModal.classList.remove('hidden');
+    playAgainButton.classList.remove('hidden');
+    howToPlayContent.classList.add('hidden');
+    gameOverContent.classList.add('hidden');
+    modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
+};
+
+const openGameOverModal = () => {
+    gameOverContent.classList.remove('hidden');
+    playAgainButton.classList.remove('hidden');
+    howToPlayContent.classList.add('hidden');
+    playAgainContent.classList.add('hidden');
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
+};
+
+const closeModal = () => {
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
 };
 
 const showReplayIcon = () => {
     replayIcon.classList.remove('hidden');
-}
+};
 
 const hideReplayIcon = () => {
     replayIcon.classList.add('hidden');
-}
+};
 
-const closePlayAgainModal = () => {
-    howToPlayModal.classList.add('hidden');
-    overlay.classList.add('hidden');
-}
-
-if (modalOpenBtn) modalOpenBtn.addEventListener('click', openHowToPlayModal);
-if (questionMark) questionMark.addEventListener('click', openHowToPlayModal);
-if (replayIcon) replayIcon.addEventListener('click', openPlayAgainModal);
-modalCloseBtn.addEventListener('click', closeHowToPlayModal);
-overlay.addEventListener('click', closeHowToPlayModal);
+if (modalOpenBtn) modalOpenBtn.addEventListener('click', () => {
+    openModal('how-to-play');
+});
+if (questionMark) questionMark.addEventListener('click', () => {
+    openModal('how-to-play');
+});
+if (replayIcon) replayIcon.addEventListener('click', () => {
+    if (localStorage.getItem('wordIsNotGuessed') === 'true') {
+        openModal('game-over');
+    } else {
+        openModal('play-again');
+    }
+});
+modalCloseBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', closeModal);
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && 
-        !howToPlayModal.classList.contains('hidden')) {
-        closeHowToPlayModal();
+        !modal.classList.contains('hidden')) {
+        closeModal();
     }
 });
 
 export { 
     playAgainButton, 
     showReplayIcon, 
-    closePlayAgainModal, 
     hideReplayIcon, 
-    howToPlayModal, 
-    openPlayAgainModal, 
-    openHowToPlayModal, 
-    closeHowToPlayModal 
+    modal, 
+    closeModal,
+    openModal
 };

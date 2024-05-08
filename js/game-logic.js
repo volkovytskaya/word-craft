@@ -2,9 +2,9 @@ import { words } from '/js/words-array.js';
 import { 
     playAgainButton, 
     showReplayIcon, 
-    closePlayAgainModal, 
     hideReplayIcon, 
-    openPlayAgainModal 
+    closeModal,
+    openModal
 } from '/js/modals.js';
 import { 
     showNotEnoughLettersMessage,
@@ -14,9 +14,11 @@ import {
 
 class Board {
     maxWordLength = 5;
+    maxWordsNum = 6;
     allBoxes = document.querySelectorAll('.box');
     emptyBoxes = document.querySelectorAll('.box');
     counterOfEnteredLetters = 0;
+    counterofEnteredWords = 0;
 
     constructor(currentBoardState) {
         this.currentBoardState = currentBoardState;
@@ -34,7 +36,7 @@ class Board {
         }
     }
     removeLetter() {
-        for (let i = this.maxWordLength; i >= 0; i--) {
+        for (let i = this.maxWordLength - 1; i >= 0; i--) {
             if (this.emptyBoxes[i].innerHTML !== '' && 
                 game.wordIsNotGuessed) {
                 this.emptyBoxes[i].innerHTML = '';
@@ -101,6 +103,13 @@ class Board {
         }
         return enteredWord;
     }
+    checkNumOfEnteredWords() {
+        if (localStorage.getItem('boardState') === null) {
+            this.counterofEnteredWords = 0;
+        } else {
+            this.counterofEnteredWords = localStorage.getItem('boardState').split(',').length;
+        }
+    }
     clearBoard() {
         for (let i = 0; i < this.allBoxes.length; i++) {
             this.allBoxes[i].innerHTML = '';
@@ -127,13 +136,18 @@ class Game {
             this.wordIsNotGuessed = false;
             localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
             localStorage.setItem('wordForGuessingIsSelected', false);
-            openPlayAgainModal();
+            openModal('play-again');
             showReplayIcon();
         } else {
             board.addColorToLetters(wordToGuess, enteredWord);
             this.wordIsNotGuessed = true;
             localStorage.setItem('wordIsNotGuessed', this.wordIsNotGuessed);
             board.emptyBoxes = [].slice.call(board.emptyBoxes, 5);
+            board.checkNumOfEnteredWords();
+            if (checkIfAttemptsEnded()) {
+                openModal('game-over');
+                showReplayIcon();
+            }
         }
         board.counterOfEnteredLetters = 0;
     }
@@ -164,7 +178,7 @@ class Game {
         board.updateBoardStateInLocalStorage(board.currentBoardState);
         board.updateBoardStateOnUI();
         wordToGuess = this.selectWordForGuessing();
-        closePlayAgainModal();
+        closeModal();
         hideReplayIcon();
         board.clearBoard();
         board.removeColorFromLetters();
@@ -174,13 +188,6 @@ class Game {
 }
 
 const keys = document.querySelectorAll('.key');
-
-let numOfEnteredWords;
-if (localStorage.getItem('boardState') === null) {
-    numOfEnteredWords = 0;
-} else {
-    numOfEnteredWords = localStorage.getItem('boardState').split(',').length;
-}
 
 let currentBoardState = [];
 if (localStorage.getItem('boardState') !== null) {
@@ -199,10 +206,11 @@ if (localStorage.getItem('wordForGuessingIsSelected') === null) {
     wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
 }
 
+board.checkNumOfEnteredWords();
 board.updateBoardStateOnUI();
 
 if (localStorage.getItem('wordForGuessingIsSelected') === 'false' && 
-    numOfEnteredWords > 0) {
+    board.counterofEnteredWords > 0) {
         board.updateBoardStateOnUI();
 }
 
@@ -285,4 +293,11 @@ function handleKeyClick(event) {
 function handleLetterKey(key, keyContent) {
     board.fillBoxesWithLetters(keyContent);
     key.blur();
+}
+
+function checkIfAttemptsEnded() {
+    if (board.counterofEnteredWords === board.maxWordsNum) {
+        return true;
+    }
+    return false;
 }
