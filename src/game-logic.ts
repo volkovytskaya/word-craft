@@ -17,16 +17,27 @@ import {
 } from './messages.js';
 
 class Board {
-    maxWordLength = 5;
-    maxWordsNum = 6;
-    allBoxes = document.querySelectorAll('.box');
-    emptyBoxes = document.querySelectorAll('.box');
-    counterOfEnteredLetters = 0;
-    counterOfEnteredWords = 0;
-    currentBoardState: string[] = [];
-    boardStateInLocalStorage = this.getBoardStateFromLocalStorage();
+    readonly maxWordLength: number;
+    readonly maxWordsNum: number;
+    readonly allBoxes: NodeListOf<HTMLElement>;
+    emptyBoxes: Array<HTMLElement>;
+    counterOfEnteredLetters: number;
+    counterOfEnteredWords: number;
+    currentBoardState: string[];
+    boardStateInLocalStorage: string[];
 
-    fillEmptyBoxesWithLetters(keyName: string) {
+    constructor() {
+        this.maxWordLength = 5;
+        this.maxWordsNum = 6;
+        this.allBoxes = document.querySelectorAll('.box');
+        this.emptyBoxes = Array.from(this.allBoxes);
+        this.counterOfEnteredLetters = 0;
+        this.counterOfEnteredWords = 0;
+        this.currentBoardState = [];
+        this.boardStateInLocalStorage = this.getBoardStateFromLocalStorage();
+    }
+
+    fillEmptyBoxesWithLetters(keyName: string): void {
         const regExp = /^[A-za-z]$/;
         for (let i = 0; i < this.maxWordLength; i++) {
             if (this.emptyBoxes[i].innerHTML === '' && 
@@ -38,7 +49,7 @@ class Board {
             }
         }
     }
-    removeLetterFromBox() {
+    removeLetterFromBox(): void {
         for (let i = this.maxWordLength - 1; i >= 0; i--) {
             if (this.emptyBoxes[i].innerHTML !== '' && 
                 game.wordIsNotGuessed) {
@@ -48,22 +59,26 @@ class Board {
             }
         }
     }
-    getBoardStateFromLocalStorage() {
-        return localStorage.getItem('boardState');
+    getBoardStateFromLocalStorage(): string[] {
+        let boardStateInLocalStorage = localStorage.getItem('boardState');
+        if (boardStateInLocalStorage !== null) {
+            return boardStateInLocalStorage.split(',');
+        }
+        return [];
     }
-    updateBoardStateInLocalStorage() {
+    updateBoardStateInLocalStorage(): void {
         if (this.currentBoardState.length === 0) {
             localStorage.removeItem('boardState');
         } else {
             localStorage.setItem('boardState', this.currentBoardState.toString());
         }
     }
-    updateBoardStateBasedOnLocalStorage(boardStateInLocalStorage: string | null) {
+    updateBoardStateBasedOnLocalStorage(boardStateInLocalStorage: string[]): void {
         if (boardStateInLocalStorage !== null) {
-            board.currentBoardState = boardStateInLocalStorage.split(',');
+            board.currentBoardState = boardStateInLocalStorage;
         } 
     }
-    updateBoardStateOnUI(enteredWords: string[]) {
+    updateBoardStateOnUI(enteredWords: string[]): void {
         for (let i = 0; i < enteredWords.length; i++) {
             for (let j = 0; j < enteredWords[i].length; j++) {
                 this.fillEmptyBoxesWithLetters(enteredWords[i][j]);
@@ -71,7 +86,7 @@ class Board {
             game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
         }
     }
-    addColorToLetters(wordToGuess: string, enteredWord: string) {
+    addColorToLetters(wordToGuess: string, enteredWord: string): void {
         for (let i = 0; i < this.maxWordLength; i++) {
             for (let j = 0; j < this.maxWordLength; j++) {
                 if (enteredWord[i] === wordToGuess[j]) {
@@ -92,7 +107,7 @@ class Board {
             }
         }
     }
-    removeColorFromLetters() {
+    removeColorFromLetters(): void {
         for (let i = 0; i < this.allBoxes.length; i++) {
             this.allBoxes[i].classList.remove('colored');
             this.allBoxes[i].classList.remove('orange');
@@ -100,7 +115,7 @@ class Board {
             this.allBoxes[i].classList.remove('grey');
         }
     }
-    returnEnteredWord() {
+    returnEnteredWord(): string {
         let enteredWord = '';
         for (let i = 0; i < this.maxWordLength; i++) {
             enteredWord += this.emptyBoxes[i].innerHTML;
@@ -108,43 +123,49 @@ class Board {
         }
         return enteredWord;
     }
-    returnEnteredWords() {
+    returnEnteredWords(): string[] {
         if (board.boardStateInLocalStorage !== null) {
-            return board.boardStateInLocalStorage.split(',');
+            return board.boardStateInLocalStorage;
         } else {
             return [];
         }
     }
-    updateCounterOfEnteredWords() {
+    updateCounterOfEnteredWords(): number {
         if (this.boardStateInLocalStorage === null) {
             this.counterOfEnteredWords = 0;
         } else {
-            this.counterOfEnteredWords = this.boardStateInLocalStorage.split(',').length;
+            this.counterOfEnteredWords = this.boardStateInLocalStorage.length;
         }
         return this.counterOfEnteredWords;
     }
-    clearBoard() {
+    clearBoard(): void {
         for (let i = 0; i < this.allBoxes.length; i++) {
             this.allBoxes[i].innerHTML = '';
         }
         this.counterOfEnteredLetters = 0;
-        this.emptyBoxes = document.querySelectorAll('.box');
+        this.emptyBoxes = Array.from(this.allBoxes);
     }
 }
 
 class Game {
-    wordIsNotGuessed = true;
-    wordsSorted = words.sort();
-    wordToGuess = '';
+    wordIsNotGuessed: boolean;
+    wordsSorted: string[];
+    wordToGuess: string;
 
-    selectWordForGuessing() {
+    constructor() {
+        this.wordIsNotGuessed = true;
+        this.wordsSorted = words.sort();
+        this.wordToGuess = '';
+    }
+
+    selectWordForGuessing(): string {
         let indexOfWordToGuess = Math.floor(Math.random() * (words.length - 1));
         this.wordToGuess = words[indexOfWordToGuess].toUpperCase();
         localStorage.setItem('wordForGuessingIsSelected', 'true');
         localStorage.setItem('id', indexOfWordToGuess.toString());
         return this.wordToGuess;
     }
-    checkIfGuessed(wordToGuess: string, enteredWord: string) {
+    checkIfGuessed(wordToGuess: string, enteredWord: string): void {
         if (wordToGuess === enteredWord) {
             board.addColorToLetters(wordToGuess, enteredWord);
             this.wordIsNotGuessed = false;
@@ -156,7 +177,7 @@ class Game {
             board.addColorToLetters(wordToGuess, enteredWord);
             this.wordIsNotGuessed = true;
             localStorage.setItem('wordIsNotGuessed', 'true');
-            board.emptyBoxes = [].slice.call(board.emptyBoxes, 5) as any as NodeListOf<Element>;
+            board.emptyBoxes = [].slice.call(board.emptyBoxes, 5);
             board.boardStateInLocalStorage = board.getBoardStateFromLocalStorage();
             board.updateCounterOfEnteredWords();
             if (this.checkIfAttemptsEnded()) {
@@ -166,7 +187,7 @@ class Game {
         }
         board.counterOfEnteredLetters = 0;
     }
-    checkIfWordInWordsList(enteredWord: string) {
+    checkIfWordInWordsList(enteredWord: string): boolean {
         let low = 0;
         let high = words.length - 1;
         let mid = Math.floor((low + high) / 2);
@@ -188,16 +209,16 @@ class Game {
         }
         return inWordsList;
     }
-    isWordComplete() {
+    isWordComplete(): boolean {
         return board.counterOfEnteredLetters === 5;
     }
-    checkIfAttemptsEnded() {
+    checkIfAttemptsEnded(): boolean {
         if (board.counterOfEnteredWords === board.maxWordsNum) {
             return true;
         }
         return false;
     }
-    startNewGame() {
+    startNewGame(): void {
         board.currentBoardState = [];
         board.updateBoardStateInLocalStorage();
         this.wordToGuess = this.selectWordForGuessing();
@@ -209,10 +230,15 @@ class Game {
         localStorage.setItem('wordIsNotGuessed', 'true');
     }
 }
-class Keyboard {
-    keys = document.querySelectorAll('.key');
 
-    handleKeyDown(event: KeyboardEvent) {
+class Keyboard {
+    keys: NodeListOf<HTMLElement>;
+
+    constructor() {
+        this.keys = document.querySelectorAll('.key')
+    }
+
+    handleKeyDown(event: KeyboardEvent): void {
         if (this.isEnterPressed(event) && game.isWordComplete()) {
             this.handleEnterPressedWhenWordComplete();
         } else if (this.isEnterPressed(event) && !game.isWordComplete()) {
@@ -222,16 +248,16 @@ class Keyboard {
             board.removeLetterFromBox();
         }
     }
-    isEnterPressed(event: KeyboardEvent) {
+    isEnterPressed(event: KeyboardEvent): boolean {
         return event.key === 'Enter';
     }
-    isDeletePressed(event: KeyboardEvent) {
+    isDeletePressed(event: KeyboardEvent): boolean {
         return event.key === 'Delete';
     }
-    isBackspace(event: KeyboardEvent) {
+    isBackspace(event: KeyboardEvent): boolean {
         return event.key === 'Backspace';
     }
-    handleEnterPressedWhenWordComplete(key?: HTMLElement) {
+    handleEnterPressedWhenWordComplete(key?: HTMLElement): void {
         if (game.checkIfWordInWordsList(board.returnEnteredWord())) {
             board.currentBoardState.push(board.returnEnteredWord());
             board.updateBoardStateInLocalStorage();
@@ -244,7 +270,7 @@ class Keyboard {
             key.blur();
         }
     }
-    handleKeyClick(event: Event) {
+    handleKeyClick(event: Event): void {
         const key = event.target as HTMLElement;
         let keyContent = '';
         if (key !== null) {
@@ -262,7 +288,7 @@ class Keyboard {
             key.blur();
         }
     }
-    handleLetterKey(key: HTMLElement, keyContent: string) {
+    handleLetterKey(key: HTMLElement, keyContent: string): void {
         board.fillEmptyBoxesWithLetters(keyContent);
         key.blur();
     }
@@ -305,3 +331,5 @@ keyboard.keys.forEach((key) => {
         keyboard.handleKeyClick(event);
     });
 });
+
+console.log(game.wordToGuess);

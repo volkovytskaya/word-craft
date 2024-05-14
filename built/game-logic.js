@@ -6,7 +6,7 @@ class Board {
         this.maxWordLength = 5;
         this.maxWordsNum = 6;
         this.allBoxes = document.querySelectorAll('.box');
-        this.emptyBoxes = document.querySelectorAll('.box');
+        this.emptyBoxes = Array.from(this.allBoxes);
         this.counterOfEnteredLetters = 0;
         this.counterOfEnteredWords = 0;
         this.currentBoardState = [];
@@ -35,7 +35,11 @@ class Board {
         }
     }
     getBoardStateFromLocalStorage() {
-        return localStorage.getItem('boardState');
+        let boardStateInLocalStorage = localStorage.getItem('boardState');
+        if (boardStateInLocalStorage !== null) {
+            return boardStateInLocalStorage.split(',');
+        }
+        return [];
     }
     updateBoardStateInLocalStorage() {
         if (this.currentBoardState.length === 0) {
@@ -47,7 +51,7 @@ class Board {
     }
     updateBoardStateBasedOnLocalStorage(boardStateInLocalStorage) {
         if (boardStateInLocalStorage !== null) {
-            board.currentBoardState = boardStateInLocalStorage.split(',');
+            board.currentBoardState = boardStateInLocalStorage;
         }
     }
     updateBoardStateOnUI(enteredWords) {
@@ -97,7 +101,7 @@ class Board {
     }
     returnEnteredWords() {
         if (board.boardStateInLocalStorage !== null) {
-            return board.boardStateInLocalStorage.split(',');
+            return board.boardStateInLocalStorage;
         }
         else {
             return [];
@@ -108,7 +112,7 @@ class Board {
             this.counterOfEnteredWords = 0;
         }
         else {
-            this.counterOfEnteredWords = this.boardStateInLocalStorage.split(',').length;
+            this.counterOfEnteredWords = this.boardStateInLocalStorage.length;
         }
         return this.counterOfEnteredWords;
     }
@@ -117,7 +121,7 @@ class Board {
             this.allBoxes[i].innerHTML = '';
         }
         this.counterOfEnteredLetters = 0;
-        this.emptyBoxes = document.querySelectorAll('.box');
+        this.emptyBoxes = Array.from(this.allBoxes);
     }
 }
 class Game {
