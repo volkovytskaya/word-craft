@@ -68,7 +68,7 @@ class Board {
             for (let j = 0; j < enteredWords[i].length; j++) {
                 this.fillEmptyBoxesWithLetters(enteredWords[i][j]);
             }
-            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
+            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
         }
     }
     addColorToLetters(wordToGuess: string, enteredWord: string) {
@@ -115,7 +115,7 @@ class Board {
             return [];
         }
     }
-    returnNumberOfEnteredWords() {
+    updateCounterOfEnteredWords() {
         if (this.boardStateInLocalStorage === null) {
             this.counterOfEnteredWords = 0;
         } else {
@@ -135,13 +135,14 @@ class Board {
 class Game {
     wordIsNotGuessed = true;
     wordsSorted = words.sort();
+    wordToGuess = '';
 
     selectWordForGuessing() {
         let indexOfWordToGuess = Math.floor(Math.random() * (words.length - 1));
-        wordToGuess = words[indexOfWordToGuess].toUpperCase();
+        this.wordToGuess = words[indexOfWordToGuess].toUpperCase();
         localStorage.setItem('wordForGuessingIsSelected', 'true');
         localStorage.setItem('id', indexOfWordToGuess.toString());
-        return wordToGuess;
+        return this.wordToGuess;
     }
     checkIfGuessed(wordToGuess: string, enteredWord: string) {
         if (wordToGuess === enteredWord) {
@@ -157,8 +158,8 @@ class Game {
             localStorage.setItem('wordIsNotGuessed', 'true');
             board.emptyBoxes = [].slice.call(board.emptyBoxes, 5) as any as NodeListOf<Element>;
             board.boardStateInLocalStorage = board.getBoardStateFromLocalStorage();
-            board.returnNumberOfEnteredWords();
-            if (checkIfAttemptsEnded()) {
+            board.updateCounterOfEnteredWords();
+            if (this.checkIfAttemptsEnded()) {
                 showModal(gameOverContent, playAgainButton);
                 showReplayIcon();
             }
@@ -187,10 +188,19 @@ class Game {
         }
         return inWordsList;
     }
+    isWordComplete() {
+        return board.counterOfEnteredLetters === 5;
+    }
+    checkIfAttemptsEnded() {
+        if (board.counterOfEnteredWords === board.maxWordsNum) {
+            return true;
+        }
+        return false;
+    }
     startNewGame() {
         board.currentBoardState = [];
         board.updateBoardStateInLocalStorage();
-        wordToGuess = this.selectWordForGuessing();
+        this.wordToGuess = this.selectWordForGuessing();
         closeModal();
         hideReplayIcon();
         board.clearBoard();
@@ -203,9 +213,9 @@ class Keyboard {
     keys = document.querySelectorAll('.key');
 
     handleKeyDown(event: KeyboardEvent) {
-        if (this.isEnterPressed(event) && isWordComplete()) {
+        if (this.isEnterPressed(event) && game.isWordComplete()) {
             this.handleEnterPressedWhenWordComplete();
-        } else if (this.isEnterPressed(event) && !isWordComplete()) {
+        } else if (this.isEnterPressed(event) && !game.isWordComplete()) {
             showNotEnoughLettersMessage();
             hideMessage();
         } else if (this.isDeletePressed(event) || this.isBackspace(event)) {
@@ -225,7 +235,7 @@ class Keyboard {
         if (game.checkIfWordInWordsList(board.returnEnteredWord())) {
             board.currentBoardState.push(board.returnEnteredWord());
             board.updateBoardStateInLocalStorage();
-            game.checkIfGuessed(wordToGuess, board.returnEnteredWord());
+            game.checkIfGuessed(game.wordToGuess, board.returnEnteredWord());
         } else {
             showNotInWordsListMessage();
             hideMessage();
@@ -242,9 +252,9 @@ class Keyboard {
         }
         if (keyContent !== 'Enter' && keyContent !== 'Delete') {
             this.handleLetterKey(key, keyContent);
-        } else if (keyContent === 'Enter' && isWordComplete()) {
+        } else if (keyContent === 'Enter' && game.isWordComplete()) {
             this.handleEnterPressedWhenWordComplete(key);
-        } else if (keyContent === 'Enter' && !isWordComplete()) {
+        } else if (keyContent === 'Enter' && !game.isWordComplete()) {
             showNotEnoughLettersMessage();
             hideMessage();
         } else if (keyContent === 'Delete') {
@@ -258,8 +268,6 @@ class Keyboard {
     }
 }
 
-let wordToGuess = '';
-
 let board = new Board();
 let game = new Game();
 let keyboard = new Keyboard();
@@ -267,12 +275,12 @@ let keyboard = new Keyboard();
 board.updateBoardStateBasedOnLocalStorage(board.getBoardStateFromLocalStorage());
 
 if (localStorage.getItem('wordForGuessingIsSelected') === null) {
-    wordToGuess = game.selectWordForGuessing();
+    game.wordToGuess = game.selectWordForGuessing();
 } else {
-    wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
+    game.wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
 }
 
-board.returnNumberOfEnteredWords();
+board.updateCounterOfEnteredWords();
 board.updateBoardStateOnUI(board.returnEnteredWords());
 
 if (playAgainButton) {
@@ -292,19 +300,8 @@ document.addEventListener('keydown', (event) => {
     keyboard.handleKeyDown(event);
 });
 
-function isWordComplete() {
-    return board.counterOfEnteredLetters === 5;
-}
-
 keyboard.keys.forEach((key) => {
     key.addEventListener('click', (event) => {
         keyboard.handleKeyClick(event);
     });
 });
-
-function checkIfAttemptsEnded() {
-    if (board.counterOfEnteredWords === board.maxWordsNum) {
-        return true;
-    }
-    return false;
-}
