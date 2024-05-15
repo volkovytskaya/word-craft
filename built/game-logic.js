@@ -137,6 +137,14 @@ class Game {
         localStorage.setItem('id', indexOfWordToGuess.toString());
         return this.wordToGuess;
     }
+    updateWordToGuess() {
+        if (localStorage.getItem('wordForGuessingIsSelected') === null) {
+            this.wordToGuess = this.selectWordForGuessing();
+        }
+        else {
+            this.wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
+        }
+    }
     checkIfGuessed(wordToGuess, enteredWord) {
         if (wordToGuess === enteredWord) {
             board.addColorToLetters(wordToGuess, enteredWord);
@@ -274,12 +282,7 @@ let board = new Board();
 let game = new Game();
 let keyboard = new Keyboard();
 board.updateBoardStateBasedOnLocalStorage(board.getBoardStateFromLocalStorage());
-if (localStorage.getItem('wordForGuessingIsSelected') === null) {
-    game.wordToGuess = game.selectWordForGuessing();
-}
-else {
-    game.wordToGuess = words[Number(localStorage.getItem('id'))].toUpperCase();
-}
+game.updateWordToGuess();
 board.updateCounterOfEnteredWords();
 board.updateBoardStateOnUI(board.returnEnteredWords());
 if (playAgainButton) {
@@ -301,4 +304,3 @@ keyboard.keys.forEach((key) => {
         keyboard.handleKeyClick(event);
     });
 });
-console.log(game.wordToGuess);
