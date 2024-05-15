@@ -43,12 +43,16 @@ button {
     text-decoration: none;
     cursor: pointer;
     background-color: var(--dark-color);
-    color: white;
+    color: var(--white);
     padding: 0.2em 0.6em;
     border-radius: 1em;
     border: none;
     font-size: 1.5rem;
     margin-top: 1em;
+}
+
+ul {
+    padding-left: 20px;
 }
 
 .game-page-header {
@@ -71,7 +75,7 @@ button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: white;
+    background-color: var(--white);
     border-radius: 0.4em;
     width: 40vw;
     left: 0; 
@@ -122,7 +126,7 @@ button {
 }
 
 .box, .box-example {
-    background-color: white;
+    background-color: var(--white);
     height: 60px;
     width: 60px;
     margin: 5px 5px 0 0;
@@ -146,7 +150,7 @@ button {
 .key {
     padding: 10px;
     margin: 2px;
-    background-color: rgb(41, 41, 41);
+    background-color: var(--dark-color);
     font-size: 1rem;
     border-radius: 0.5em;
 }
@@ -172,8 +176,8 @@ button {
 }
 
 .message {
-    background-color: black;
-    color: white;
+    background-color: var(--black);
+    color: var(--white);
     padding: 5px;
     width: 250px;
     position: absolute; 
