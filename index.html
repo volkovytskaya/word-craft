@@ -4,17 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Craft</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="styles.css">
-    <script src="../built/game-logic.js" type="module"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Moo+Lah+Lah&display=swap" rel="stylesheet">
     <script src="../built/words-array.js" type="module"></script>
     <script src="../built/modals.js" type="module"></script>
 </head>
 <body>
-    <header>
-        <h1>Word Craft</h1>
-        <p>Get 6 chances to guess a 5-letter word</p>
-        <button class="modal-open-button">How to play</button>
-        <a class="play-button" href="game.html">Play</a>
+    <header class="intro-content">
+        <div>
+            <svg class="grid-icon" xmlns="http://www.w3.org/2000/svg" width="80px" height="80px" viewBox="0 0 24 24" fill="none">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+                <g id="SVGRepo_iconCarrier"> <path d="M22 11V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22H10" stroke="#434343" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M2.03003 8.5H22" stroke="#434343" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M2.03003 15.5H12" stroke="#434343" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M8.51001 21.99V2.01001" stroke="#434343" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M15.51 11.99V2.01001" stroke="#434343" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> <path d="M18.73 14.6701L14.58 18.82C14.42 18.98 14.27 19.29 14.23 19.51L14 21.1C13.92 21.67 14.32 22.08 14.89 21.99L16.48 21.76C16.7 21.73 17.01 21.5701 17.17 21.4101L21.32 17.26C22.03 16.55 22.37 15.7101 21.32 14.6601C20.28 13.6201 19.45 13.9501 18.73 14.6701Z" stroke="#434343" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/> <path d="M18.14 15.26C18.49 16.52 19.48 17.5 20.74 17.86" stroke="#434343" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/> </g>
+            </svg>
+            <h1>Word Craft</h1>
+            <p>Get 6 chances to guess a 5-letter word</p>
+            <button class="modal-open-button">How to play</button>
+            <button onclick="window.open('game.html', '_self')">Play</button>
+        </div>
     </header>
     <main>
         <section class="modal hidden">
@@ -26,31 +36,33 @@
             </div>
             <div class="how-to-play">
                 <h2>How To Play</h2>
-                <p>Guess the word in 6 tries.</p>
-                <p>Each guess must be a valid 5-letter word.</p>
-                <p>The color of the tiles will change to show how close your guess was to the word.</p>
+                <ul>
+                    <li>Guess the word in 6 tries.</li>
+                    <li>Each guess must be a valid 5-letter word.</li>
+                    <li>The color of the tiles will change to show how close your guess was to the word.</li>
+                </ul>
                 <p>Examples</p>
-                <div class="row">
-                    <div class="box-example" style="background-color: #9adfbc;">W</div>
+                <div class="row-example">
+                    <div class="box-example" style="background-color: #bbffbb;">W</div>
                     <div class="box-example">E</div>
                     <div class="box-example">A</div>
                     <div class="box-example">R</div>
                     <div class="box-example">Y</div>
                 </div>
                 <p>W is in the word and in the correct spot.</p>
-                <div class="row">
+                <div class="row-example">
                     <div class="box-example">P</div>
-                    <div class="box-example" style="background-color: #ffc86a;">I</div>
+                    <div class="box-example" style="background-color: #fffaa3;">I</div>
                     <div class="box-example">L</div>
                     <div class="box-example">L</div>
                     <div class="box-example">S</div>
                 </div>
                 <p>I is in the word but in the wrong spot.</p>
-                <div class="row">
+                <div class="row-example">
                     <div class="box-example">V</div>
                     <div class="box-example">A</div>
                     <div class="box-example">G</div>
-                    <div class="box-example" style="background-color: #cecece;">U</div>
+                    <div class="box-example" style="background-color: #eeeeee;">U</div>
                     <div class="box-example">E</div>
                 </div>
                 <p>U is not in the word in any spot.</p> 

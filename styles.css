@@ -1,11 +1,24 @@
-body {
-    background-color: #eeeee5;
-    font-family: sans-serif;
-    font-size: 1.2rem;
+:root {
+    --background-color-light: #fcfcf6;
+    --accent-color: #aa96e4;
+    --dark-color: #434343;
+    --guessed-letter-color: #bbffbb;
+    --not-guessed-letter-color: #eeeeee;
+    --wrong-spot-letter-color: #fffaa3;
+    --black: #000000;
+    --white: #ffffff;
+    --header-font: "Moo Lah Lah", sans-serif;
+    --main-font: sans-serif;
 }
 
 header {
     text-align: center;
+}
+
+body {
+    background-color: var(--background-color-light);
+    font-family: var(--main-font);
+    margin: 0;
 }
 
 main {
@@ -13,40 +26,69 @@ main {
 }
 
 h1 {
-    color: #aa96e4;
+    color: var(--accent-color);
+    font-family: var(--header-font);
+    font-weight: 400;
+    font-style: normal;
+    font-size: 10rem;
+    margin: 0;
+}
+
+p {
+    font-size: 1.5rem;
+    margin: 0;
 }
 
 button {
     text-decoration: none;
     cursor: pointer;
-    background-color: black;
+    background-color: var(--dark-color);
     color: white;
     padding: 0.2em 0.6em;
-    border-radius: 0.4em;
+    border-radius: 1em;
     border: none;
-    font-size: 1.2rem;
-    margin: 1.2em;
+    font-size: 1.5rem;
+    margin-top: 1em;
 }
 
-a {
-    text-decoration: none;
-    cursor: pointer;
-    background-color: black;
-    color: white;
-    padding: 0.2em 0.6em;
-    border-radius: 0.4em;
+.game-page-header {
+    font-size: 5rem;
+}
+
+.intro-content {
+    height: 100vh;
+}
+
+.intro-content div {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
 }
 
 .modal {
     position: absolute;
-    top: 4%;
+    top: 50%;
+    transform: translateY(-50%);
     background-color: white;
     border-radius: 0.4em;
-    width: 60vw;
+    width: 40vw;
     left: 0; 
     right: 0; 
     margin: 0 auto;
+    padding: 1.5em;
     z-index: 2;
+}
+
+.how-to-play ul li, .how-to-play p {
+    font-size: 1rem;
+    margin-top: 0.5em;
+    text-align: left;
+}
+
+.how-to-play h2 {
+    margin-top: 0;
 }
 
 .overlay {
@@ -57,7 +99,7 @@ a {
     right: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(3px);
     z-index: 1;
 }
@@ -66,6 +108,7 @@ a {
     cursor: pointer;
     position: absolute;
     right: 0;  
+    top: 0;
     padding: 10px;  
 }
 
@@ -74,15 +117,21 @@ a {
     justify-content: center;
 }
 
+.row-example {
+    display: flex;
+}
+
 .box, .box-example {
     background-color: white;
     height: 60px;
     width: 60px;
-    margin: 5px;
-    border: 1px solid rgb(41, 41, 41);
+    margin: 5px 5px 0 0;
+    border-radius: 0.2em;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 0.1rem solid;
 }
 
 .icons, .text, .question-mark, .replay-icon {
@@ -97,9 +146,9 @@ a {
 .key {
     padding: 10px;
     margin: 2px;
-    /* min-width: 50px;
-    min-height: 58px; */
     background-color: rgb(41, 41, 41);
+    font-size: 1rem;
+    border-radius: 0.5em;
 }
 
 .keyboard {
@@ -107,15 +156,15 @@ a {
 }
 
 .orange {
-    background-color: #ffc86a;
+    background-color: var(--wrong-spot-letter-color);
 }
 
 .grey {
-    background-color: #cecece;
+    background-color: var(--not-guessed-letter-color);
 }
 
 .green {
-    background-color: #9adfbc;
+    background-color: var(--guessed-letter-color);
 }
 
 .hidden {
@@ -139,5 +188,11 @@ a {
 @media (width <= 650px) {
     .key {
         font-size: 0.6rem;
+    }
+    .game-page-header {
+        font-size: 3rem;
+    }
+    .modal {
+        width: 70vw;
     }
 }

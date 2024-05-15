@@ -20,7 +20,7 @@ const showModal = (contentToShow: HTMLElement, buttonToShow?: HTMLElement) => {
     });
     if (buttonToShow !== undefined) {
         playAgainButton.classList.remove('hidden');
-    } else {
+    } else if (playAgainButton) {
         playAgainButton.classList.add('hidden');
     }
     modal.classList.remove('hidden');

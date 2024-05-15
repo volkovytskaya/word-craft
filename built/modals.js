@@ -21,7 +21,7 @@ const showModal = (contentToShow, buttonToShow) => {
     if (buttonToShow !== undefined) {
         playAgainButton.classList.remove('hidden');
     }
-    else {
+    else if (playAgainButton) {
         playAgainButton.classList.add('hidden');
     }
     modal.classList.remove('hidden');
