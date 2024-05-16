@@ -13,6 +13,7 @@ import {
 import { 
     showNotEnoughLettersMessage,
     showNotInWordsListMessage,
+    showInvalidCharacterEnteredMessage,
     hideMessage
 } from './messages.js';
 
@@ -38,15 +39,24 @@ class Board {
     }
 
     fillEmptyBoxesWithLetters(keyName: string): void {
-        const regExp = /^[A-za-z]$/;
         for (let i = 0; i < this.maxWordLength; i++) {
             if (this.emptyBoxes[i].innerHTML === '' && 
-                regExp.test(keyName) && 
+                this.isEnteredLetterValid(keyName) && 
                 game.wordIsNotGuessed) {
                     this.emptyBoxes[i].innerHTML = keyName.toUpperCase();
                     this.counterOfEnteredLetters++;
                     break;
             }
+        }
+    }
+    isEnteredLetterValid(keyName: string): boolean {
+        const regExp = /^[A-za-z]$/;
+        if (regExp.test(keyName)) {
+            return true;
+        } else {
+            showInvalidCharacterEnteredMessage();
+            hideMessage();
+            return false;
         }
     }
     removeLetterFromBox(): void {

@@ -16,8 +16,14 @@ const showNotInWordsListMessage = () => {
     message.classList.remove('hidden');
 };
 
+const showInvalidCharacterEnteredMessage = () => {
+    message.innerHTML = 'Invalid character entered.<br> Please make sure to enter english letters';
+    message.classList.remove('hidden');
+};
+
 export {
     showNotEnoughLettersMessage,
     showNotInWordsListMessage,
+    showInvalidCharacterEnteredMessage,
     hideMessage
 };

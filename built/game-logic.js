@@ -1,6 +1,6 @@
 import { words } from './words-array.js';
 import { playAgainButton, showReplayIcon, hideReplayIcon, closeModal, showModal, gameOverContent, playAgainContent } from './modals.js';
-import { showNotEnoughLettersMessage, showNotInWordsListMessage, hideMessage } from './messages.js';
+import { showNotEnoughLettersMessage, showNotInWordsListMessage, showInvalidCharacterEnteredMessage, hideMessage } from './messages.js';
 class Board {
     constructor() {
         this.maxWordLength = 5;
@@ -13,15 +13,25 @@ class Board {
         this.boardStateInLocalStorage = this.getBoardStateFromLocalStorage();
     }
     fillEmptyBoxesWithLetters(keyName) {
-        const regExp = /^[A-za-z]$/;
         for (let i = 0; i < this.maxWordLength; i++) {
             if (this.emptyBoxes[i].innerHTML === '' &&
-                regExp.test(keyName) &&
+                this.isEnteredLetterValid(keyName) &&
                 game.wordIsNotGuessed) {
                 this.emptyBoxes[i].innerHTML = keyName.toUpperCase();
                 this.counterOfEnteredLetters++;
                 break;
             }
+        }
+    }
+    isEnteredLetterValid(keyName) {
+        const regExp = /^[A-za-z]$/;
+        if (regExp.test(keyName)) {
+            return true;
+        }
+        else {
+            showInvalidCharacterEnteredMessage();
+            hideMessage();
+            return false;
         }
     }
     removeLetterFromBox() {
