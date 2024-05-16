@@ -8,8 +8,9 @@ const howToPlayContent = document.querySelector('.how-to-play') as HTMLElement;
 const gameOverContent = document.querySelector('.game-over') as HTMLElement;
 const replayIcon = document.querySelector('.replay-icon') as HTMLElement;
 const playAgainButton = document.querySelector('.play-again-button') as HTMLElement;
+const notGuessedWordElement = document.querySelector('.not-guessed-word') as HTMLElement;
 
-const showModal = (contentToShow: HTMLElement, buttonToShow?: HTMLElement) => {
+const showModal = (contentToShow: HTMLElement, buttonToShow?: HTMLElement, notGuessedWord?: string) => {
     const contentTypes = [playAgainContent, howToPlayContent, gameOverContent];
     contentTypes.forEach((content) => {
         if (content === contentToShow) {
@@ -22,6 +23,9 @@ const showModal = (contentToShow: HTMLElement, buttonToShow?: HTMLElement) => {
         playAgainButton.classList.remove('hidden');
     } else if (playAgainButton) {
         playAgainButton.classList.add('hidden');
+    }
+    if (notGuessedWord !== undefined) {
+        notGuessedWordElement.innerHTML = notGuessedWord;
     }
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');

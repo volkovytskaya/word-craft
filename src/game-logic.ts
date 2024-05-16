@@ -198,7 +198,7 @@ class Game {
             board.boardStateInLocalStorage = board.getBoardStateFromLocalStorage();
             board.updateCounterOfEnteredWords();
             if (this.checkIfAttemptsEnded()) {
-                showModal(gameOverContent, playAgainButton);
+                showModal(gameOverContent, playAgainButton, this.returnNotGuessedWord());
                 showReplayIcon();
             }
         }
@@ -245,6 +245,9 @@ class Game {
         board.removeColorFromLetters();
         this.wordIsNotGuessed = true;
         localStorage.setItem('wordIsNotGuessed', 'true');
+    }
+    returnNotGuessedWord(): string {
+        return game.wordToGuess;
     }
 }
 
