@@ -14,24 +14,11 @@ class Board {
     }
     fillEmptyBoxesWithLetters(keyName) {
         for (let i = 0; i < this.maxWordLength; i++) {
-            if (this.emptyBoxes[i].innerHTML === '' &&
-                this.isEnteredLetterValid(keyName) &&
-                game.wordIsNotGuessed) {
+            if (this.emptyBoxes[i].innerHTML === '' && game.wordIsNotGuessed) {
                 this.emptyBoxes[i].innerHTML = keyName.toUpperCase();
                 this.counterOfEnteredLetters++;
                 break;
             }
-        }
-    }
-    isEnteredLetterValid(keyName) {
-        const regExp = /^[A-za-z]$/;
-        if (regExp.test(keyName)) {
-            return true;
-        }
-        else {
-            showInvalidCharacterEnteredMessage();
-            hideMessage();
-            return false;
         }
     }
     removeLetterFromBox() {
@@ -251,6 +238,20 @@ class Keyboard {
     isBackspace(event) {
         return event.key === 'Backspace';
     }
+    isEnteredLetterValid(event) {
+        const regExp = /^[A-za-z]$/;
+        if (regExp.test(event.key)) {
+            return true;
+        }
+        else if (!keyboard.isBackspace(event) &&
+            !keyboard.isEnterPressed(event) &&
+            !keyboard.isDeletePressed(event)) {
+            showInvalidCharacterEnteredMessage();
+            hideMessage();
+            return false;
+        }
+        return false;
+    }
     handleEnterPressedWhenWordComplete(key) {
         if (game.checkIfWordInWordsList(board.returnEnteredWord())) {
             board.currentBoardState.push(board.returnEnteredWord());
@@ -305,7 +306,7 @@ if (playAgainButton) {
 }
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
-    if (!event.metaKey) {
+    if (!event.metaKey && keyboard.isEnteredLetterValid(event)) {
         board.fillEmptyBoxesWithLetters(keyName);
     }
 });
